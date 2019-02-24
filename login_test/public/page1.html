@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+	<title>Page1</title>
+	<script defer src="/__/firebase/5.8.4/firebase-app.js"></script>
+	<!-- include only the Firebase features as you need -->
+	<script defer src="/__/firebase/5.8.4/firebase-auth.js"></script>
+	<script defer src="/__/firebase/5.8.4/firebase-database.js"></script>
+	<script defer src="/__/firebase/5.8.4/firebase-messaging.js"></script>
+	<script defer src="/__/firebase/5.8.4/firebase-storage.js"></script>
+	<!-- initialize the SDK after all desired features are loaded -->
+	<script defer src="/__/firebase/init.js"></script>
+	<link rel="stylesheet" type="text/css" href="theme.css">
+</head>
+<body>
+	<p>TestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTest</p>
+	<button id= "sign_out"> Sign out</button>
+	<button id= "verify_email"> Send Email Verfication </button>
+	<button id= "who_am_i"> Who am I? </button>
+
+	<img id= "f22" src= "f22.jpg" alt="an f22">
+</body>
+
+<script type= "text/javascript">
+
+
+	//send verification email
+	function sendEmailVerification() {
+      // [START sendemailverification]
+      firebase.auth().currentUser.sendEmailVerification().then(function() {
+        // Email Verification sent!
+        // [START_EXCLUDE]
+        alert('Email Verification Sent!');
+        // [END_EXCLUDE]
+    });
+      // [END sendemailverification]
+  }
+
+  function signOut(){
+
+  	if (firebase.auth().currentUser) {
+        // [START signout]
+        firebase.auth().signOut();
+        // [END signout]
+        // Go to index
+        window.location='index.html';
+
+    }
+
+}
+
+function whoAmI(){
+	var user = firebase.auth().currentUser;
+	var name, email, photoUrl, uid, emailVerified;
+
+	if (user != null) {
+		name = user.displayName;
+		email = user.email;
+		photoUrl = user.photoURL;
+		emailVerified = user.emailVerified;
+		uid = user.uid
+	}
+	window.alert("email: "+ email + "\n uid: "+ uid +"\n is email verified: "+ emailVerified);
+}
+
+document.getElementById('sign_out').addEventListener('click',signOut, false);
+document.getElementById('verify_email').addEventListener('click', sendEmailVerification, false);
+document.getElementById('who_am_i').addEventListener('click',whoAmI,false);
+
+</script>
