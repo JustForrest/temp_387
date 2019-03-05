@@ -1,2 +1,0 @@
-If this works, it means I was able to create a text file using the editor on my Macbook.
-This line was added when testing Asana integration with the GitLab server.
