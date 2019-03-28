@@ -1,2 +1,0 @@
-Text file for Forrest's test commit. (created on website)
-This line was edited using Atom on my Macbook.
