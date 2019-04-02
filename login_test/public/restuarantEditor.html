@@ -14,27 +14,33 @@
 		};
 		firebase.initializeApp(config);
 		function readDatabase() {
+			console.log("test2");
 			var db = firebase.firestore();
-			db.collection("users").where("id", "==", firebase.auth().currentUser.uid).get().then(function(snapshot) {
+			var user = firebase.auth().currentUser;
+			db.collection("users").where("id", "==", "RY4qsmRwZEhTz43sKN4XK9xPmVB2").get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
-					//console.log(doc);
+					console.log("test3");
 					var data = doc.data();
 					restuarantId = data.restuarantIDs[0];
+					console.log(restuarantId);
 				});
 			});
 			db.collection("restuarants").where("restuarantId", "==", restuarantId).get().then( function(snapshot) {
 				snapshot.forEach(function(doc) {
+					console.log("test4");
 					restuarantDoc = doc;
 				});
 			});
 			var data = restuarantDoc.data();
-			location = data.restuarantLocation;
+			location = data.location;
 			name = data.restuarantName;
 			style = data.style;
 			schedule = data.schedule;
 			resetFields();
+			console.log(name);
 		}
 		function resetFields() {
+			console.log("test5");
 			document.getElementById("resName").value = name;
 			document.getElementById("street").value = location.street;
 			document.getElementById("city").value = location.city;
@@ -116,5 +122,7 @@
 	document.getElementById('menu').addEventListener('click',toMenu,false);
 	document.getElementById('order').addEventListener('click',toOrder,false);
 	document.getElementById('dashboard').addEventListener('click',toDashboard,false);
+	console.log("test1");
+	readDatabase();
 </script>
 </html>
