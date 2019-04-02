@@ -1,0 +1,84 @@
+<html>
+<head>
+	<title>Edit Menu</title>
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+		var user, greatestResId = 0, resId, location, name, schedule, style;
+		var db = firebase.firestore();
+		var config = {
+			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  			authDomain: "group-12-4ca6d.firebaseapp.com",
+  			databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  			projectId: "group-12-4ca6d",
+  			storageBucket: "group-12-4ca6d.appspot.com",
+  			messagingSenderId: "215325431071"
+		};
+		firebase.initializeApp(config);
+		db.collection("users").where("id", "==", firebase.auth().currentUser).get().then(function(snapshot) {
+			snapshot.forEach(function(doc) {
+				user = doc;
+			});
+		});
+		var newRestuarant = db.collection("cities").doc();
+		//accumulate data and store it in the database
+		function store() {
+			name = document.getElementById('resName').value;
+			location = {
+				street:document.getElementById('street').value,
+				city:document.getElementById('city').value,
+				state:document.getElementById('state').value,
+				zip:document.getElementById('zip').value
+			}
+			db.collection("restuarants").get().then(function(snapshot) {
+				snapshot.forEach(function(doc) {
+					if(doc.data().restuarantId > greatestResId) {
+						greatestResId = doc.data().restuarantId;
+					}
+				});
+			});
+			resId = greatestResId + 1;
+			schedule = {
+				monday:document.getElementById('monday').value,
+				tuesday:document.getElementById('tuesday').value,
+				wednesday:document.getElementById('wednesday').value,
+				thursday:document.getElementById('thursday').value,
+				friday:document.getElementById('friday').value,
+				saturday:document.getElementById('saturday').value,
+				sunday:document.getElementById('sunday').value
+			}
+			style = document.getElementById('type').value;
+			newRestuarant.set({
+				restuarantName:name,
+				restuarantId:resId,
+				restuarantLocation:location,
+				schedule:this.schedule,
+				style:this.style
+			})
+			user.update({
+				restuarantIDs[0]:resId
+			})
+		}
+		document.getElementById('store').addEventListener('click', store, false);
+	</script>
+</head>
+<body>
+	<p>Restuarant Name:</p>
+	<input type="text" id="resName" name="resName"/>
+	<p>Address:</p>
+	<input type="text" id="street" name="street" placeholder="street"/>
+	<input type="text" id="city" name="city" placeholder="city"/>
+	<input type="text" id="state" name="state" placeholder="state"/>
+	<input type="text" id="zip" name="zip" placeholder="zip"/>
+	<p>Cuisine type:</p>
+	<input type="text" id="type" name="type"/>
+	<p>Hours:</p>
+	<input type="text" id="monday" name="monday" placeholder="monday"/>
+	<input type="text" id="tuesday" name="tuesday" placeholder="tuesday"/>
+	<input type="text" id="wednesday" name="wednesday"/>
+	<input type="text" id="thursday" name="thursday"/>
+	<input type="text" id="friday" name="friday"/>
+	<input type="text" id="saturday" name="saturday"/>
+	<input type="text" id="sunday" name="sunday"/>
+	<button id="store">STORE DUMMY INFORMATION</button>
+</body>
+</html>
