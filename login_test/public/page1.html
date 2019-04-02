@@ -23,12 +23,13 @@
 	<button id= "sign_out"> Sign out</button>
 	<button id= "verify_email"> Send Email Verfication </button>
 	<button id= "who_am_i"> Who am I? </button>
+	<button id= "add">ADD TO DATABASE </button>
 
 	<img id= "f22" src= "f22.jpg" alt="an f22">
 </body>
 
 <script type= "text/javascript">
-
+	var flag = true, db = firebase.firestore();
 
 	//send verification email
 	function sendEmailVerification() {
@@ -49,7 +50,7 @@
         firebase.auth().signOut();
         // [END signout]
         // Go to index
-        window.location='index.html';
+        window.location='login.html';
 
     }
 
@@ -68,9 +69,38 @@ function whoAmI(){
 	}
 	window.alert("email: "+ email + "\n uid: "+ uid +"\n is email verified: "+ emailVerified);
 }
+function logUser() {
+	console.log("hello");
+    var user = firebase.auth().currentUser;
+
+	console.log(user.uid);
+        db.collection("users").where("id", "==", firebase.auth().currentUser.uid).get().then(function(snapshot) {
+          snapshot.forEach(function(doc) {
+            console.log(flag);
+            flag = false;
+          });
+        });
+        console.log(flag);
+        if(flag){
+          if (user != null) {
+           db.collection("users").add({
+            email:user.email,
+            id:user.uid,
+            userType:"owner"
+           }).then(function(docRef) {
+            console.log("doc written");
+           }).catch(function(error) {
+            console.error(error);
+           });
+         }
+        }
+
+
+}
 
 document.getElementById('sign_out').addEventListener('click',signOut, false);
 document.getElementById('verify_email').addEventListener('click', sendEmailVerification, false);
 document.getElementById('who_am_i').addEventListener('click',whoAmI,false);
+document.getElementById('add').addEventListener('click',logUser,false);
 
 </script>
