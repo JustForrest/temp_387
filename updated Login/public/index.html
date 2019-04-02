@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Login</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<!--===============================================================================================-->
+
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+  // Initialize Firebase
+  var config = {
+  	apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  	authDomain: "group-12-4ca6d.firebaseapp.com",
+  	databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  	projectId: "group-12-4ca6d",
+  	storageBucket: "group-12-4ca6d.appspot.com",
+  	messagingSenderId: "215325431071"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script type="text/javascript">
+
+         //Google sign in
+         function google(){
+         	var provider = new firebase.auth.GoogleAuthProvider();
+         	firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+
+    }).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // The email of the user"s account used.
+          var email = error.email;
+          // The firebase.auth.AuthCredential type that was used.
+          var credential = error.credential;
+          alert(errorMessage);
+      });
+}
+
+        //sign in
+        function sign_In(){
+        	var email = document.getElementById("email").value;
+        	var password = document.getElementById("password").value;
+        	if (email.length < 4) {
+        		alert("Email should be at least 4 characters long.");
+        		return;
+        	}
+        	if (password.length < 4) {
+        		alert("Password should be at least 4 characters long.");
+        		return;
+        	}
+        	firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          if (errorCode === "auth/wrong-password") {
+          	alert("Wrong password.");
+          } else {
+          	alert(errorMessage);
+          }
+          console.log(error);
+      });
+        }
+
+    //sign up
+    function sign_Up() {
+    	var email = document.getElementById("email").value;
+    	var password = document.getElementById("password").value;
+    	if (email.length < 4) {
+    		alert("Email should be at least 4 characters long.");
+    		return;
+    	}
+    	if (password.length < 4) {
+    		alert("Password should be at least 4 characters long.");
+    		return;
+    	}
+      // Sign in with email and pass.
+      // [START createwithemail]
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // [START_EXCLUDE]
+        if (errorCode == "auth/weak-password") {
+        	alert("The password is too weak.");
+        } else {
+        	alert(errorMessage);
+        }
+        console.log(error);  
+        // [END_EXCLUDE]
+    });
+  }
+
+  function sendPasswordReset() {
+  	var email = document.getElementById("email").value;
+      // [START sendpasswordemail]
+      firebase.auth().sendPasswordResetEmail(email).then(function() {
+        // Password Reset Email Sent!
+        // [START_EXCLUDE]
+        alert("Password Reset Email Sent!");
+        // [END_EXCLUDE]
+    }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // [START_EXCLUDE]
+        if (errorCode == "auth/invalid-email") {
+        	alert(errorMessage);
+        } else if (errorCode == "auth/user-not-found") {
+        	alert(errorMessage);
+        }
+        console.log(error);
+        // [END_EXCLUDE]
+    });
+      // [END sendpasswordemail];
+  }
+
+    //initialze and state changes
+    function initApp() {
+      // Listening for auth state changes.
+      // [START authstatelistener]
+      firebase.auth().onAuthStateChanged(function(user) {
+      	if (user) {
+          // User is signed in.
+          window.location="page1.html"; 
+      }else {
+        //user is signed out
+        console.log("used signed out");
+    }
+
+
+
+});
+  }
+  window.onload= function(){
+  	initApp();
+  };
+
+</script>
+</head>
+
+<body>
+	
+	<div class="limiter">
+
+		<div class="container-login100" >
+			
+			<div class="wrap-login100 p-l-110 p-r-110 p-t-62 p-b-33">
+
+				
+				<form class="login100-form validate-form flex-sb flex-w">
+					
+					<span class="login100-form-title p-b-53">
+						Oxford to Go
+					</span>
+
+					<div class="p-t-31 p-b-9">
+						<span class="txt1">
+							Email
+						</span>
+					</div>
+
+
+					<button type="button" id="googleSignIn" onclick="google()" class="btn-google m-b-20">
+						<img src="css/images/icons/icon-google.png" >
+						Google
+					</button>
+
+					<div class="wrap-input100 validate-input">
+						<input type="text" id="email" name="email" class="input100" autocomplete="foo">
+						<span class="focus-input100"></span>
+					</div>
+					
+					<div class="p-t-13 p-b-9">
+						<span class="txt1">
+							Password
+						</span>
+
+						<button type= "button" onclick="sendPasswordReset()"id="reset_password" name= "reset_password" class="txt2 bo1 m-l-5">
+							Forgot?
+						</button>
+					</div>
+					<div class="wrap-input100 validate-input">
+						<input type="password" id="password" name="password" class="input100" autocomplete="foo">
+						<span class="focus-input100"></span>
+					</div>
+
+					<div class="container-login100-form-btn m-t-17">
+						<button type="button" onclick="sign_In()" id="signIn" class="login100-form-btn">
+							Sign In
+						</button>
+					</div>
+					<div class="container-login100-form-btn m-t-17">
+						<button type="button" onclick="sign_Up()"id= "signUp" class="login100-form-btn">
+							Sign Up	
+						</button>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+
+</body>
+</html>
