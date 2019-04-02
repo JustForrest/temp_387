@@ -1,0 +1,111 @@
+<html>
+<head>
+	<title>Restuarant Management</title>
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+		var restuarantDoc, restuarantId, location, name, style, schedule;
+		var config = {
+			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  			authDomain: "group-12-4ca6d.firebaseapp.com",
+  			databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  			projectId: "group-12-4ca6d",
+  			storageBucket: "group-12-4ca6d.appspot.com",
+  			messagingSenderId: "215325431071"
+		};
+		firebase.initializeApp(config);
+		function readDatabase() {
+			var db = firebase.firestore();
+			db.collection("users").where("id", "==", firebase.auth().currentUser.uid).get().then(function(snapshot) {
+				snapshot.forEach(function(doc) {
+					//console.log(doc);
+					var data = doc.data();
+					restuarantId = data.restuarantIDs[0];
+				});
+			});
+			db.collection("restuarants").where("restuarantId", "==", restuarantId).get().then( function(snapshot) {
+				snapshot.forEach(function(doc) {
+					restuarantDoc = doc;
+				});
+			});
+			var data = restuarantDoc.data();
+			location = data.restuarantLocation;
+			name = data.restuarantName;
+			style = data.style;
+			schedule = data.schedule;
+			resetFields();
+		}
+		function resetFields() {
+			document.getElementById("resName").value = name;
+			document.getElementById("street").value = location.street;
+			document.getElementById("city").value = location.city;
+			document.getElementById("state").value = location.state;
+			document.getElementById("zip").value = location.zip;
+			document.getElementById("type").value = style;
+			document.getElementById("monday").value = schedule.monday;
+			document.getElementById("tuesday").value = schedule.tuesday;
+			document.getElementById("wednesday").value = schedule.wednesday;
+			document.getElementById("thursday").value = schedule.thursday;
+			document.getElementById("friday").value = schedule.friday;
+			document.getElementById("saturday").value = schedule.saturday;
+			document.getElementById("sunday").value = schedule.sunday;
+		}
+		function writeDatabase() {
+			name = document.getElementById("resName").value;
+			location = {
+				street:document.getElementById("street").value,
+				city:document.getElementById("city").value,
+				state:document.getElementById("state").value,
+				zip:document.getElementById("zip").value
+			}
+			style = document.getElementById("type").value;
+			schedule = {
+				monday:document.getElementById("monday").value,
+				tuesday:document.getElementById("tuesday").value,
+				wednesday:document.getElementById("wednesday").value,
+				thursday:document.getElementById("thursday").value,
+				friday:document.getElementById("friday").value,
+				saturday:document.getElementById("saturday").value,
+				sunday:document.getElementById("sunday").value
+			}
+			restuarantDoc.update({
+				restuarantName:name,
+				restuarantLocation:location,
+				style:this.style,
+				schedule:this.schedule
+			});
+			window.location = restuarantEditor.html;
+		}
+	</script>
+</head>
+<body>
+	<p>Edit your restuarant's information</p>
+	<br>
+	<p>Restuarant Name:</p>
+	<input type="text" id="resName" name="resName"/>
+	<p>Address:</p>
+	<input type="text" id="street" name="street"/>
+	<input type="text" id="city" name="city"/>
+	<input type="text" id="state" name="state"/>
+	<input type="text" id="zip" name="zip"/>
+	<p>Cuisine type:</p>
+	<input type="text" id="type" name="type"/>
+	<p>Hours:</p>
+	<input type="text" id="monday" name="monday"/>
+	<input type="text" id="tuesday" name="tuesday"/>
+	<input type="text" id="wednesday" name="wednesday"/>
+	<input type="text" id="thursday" name="thursday"/>
+	<input type="text" id="friday" name="friday"/>
+	<input type="text" id="saturday" name="saturday"/>
+	<input type="text" id="sunday" name="sunday"/>
+	<button id="menu">Menu Editing</button>
+	<button id="save">Save Changes</button>
+	<button id="order">Order Management</button>
+	<button id="dashboard">Back to dashboard</button>
+</body>
+<script>
+	document.getElementById('save').addEventListener('click',writeDatabase,false);
+	document.getElementById('menu').addEventListener('click',window.location=menuEditor.html,false);
+	document.getElementById('order').addEventListener('click',window.location=restuarantEditor.html,false);
+	document.getElementById('dashboard').addEventListener('click',window.location=restuarantOwner.html,false);
+</script>
+</html>
