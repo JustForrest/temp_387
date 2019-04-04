@@ -3,7 +3,7 @@
 	<title>Restuarant Management</title>
 	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
 	<script>
-		var restuarantDoc, restuarantId, location, name, style, schedule;
+		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule;
 		var config = {
 			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
   			authDomain: "group-12-4ca6d.firebaseapp.com",
@@ -14,40 +14,50 @@
 		};
 		firebase.initializeApp(config);
 		function readDatabase() {
+			console.log("test2");
 			var db = firebase.firestore();
-			db.collection("users").where("id", "==", firebase.auth().currentUser.uid).get().then(function(snapshot) {
+			var user = firebase.auth().currentUser;
+			db.collection("users").where("id", "==", "RY4qsmRwZEhTz43sKN4XK9xPmVB2").get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
-					//console.log(doc);
+					console.log("test3");
 					var data = doc.data();
 					restuarantId = data.restuarantIDs[0];
+					console.log(restuarantId);
 				});
 			});
-			db.collection("restuarants").where("restuarantId", "==", restuarantId).get().then( function(snapshot) {
+			db.collection("restuarants").where("style", "==", "mexican").get().then( function(snapshot) {
 				snapshot.forEach(function(doc) {
+					console.log("test4");
+					console.log(doc.data());
+					console.log(doc.id);
 					restuarantDoc = doc;
+					console.log(restuarantDoc.id);var data = restuarantDoc.data();
+					resSchedule = data.schedule;
+					name = data.restuarantName;
+					resStyle = data.style;
+					resLocation = data.location;
+					resetFields();
 				});
 			});
-			var data = restuarantDoc.data();
-			location = data.restuarantLocation;
-			name = data.restuarantName;
-			style = data.style;
-			schedule = data.schedule;
-			resetFields();
+			console.log(name);
+			console.log(resLocation);
+			console.log(resSchedule);
 		}
 		function resetFields() {
+			console.log("test5");
 			document.getElementById("resName").value = name;
-			document.getElementById("street").value = location.street;
-			document.getElementById("city").value = location.city;
-			document.getElementById("state").value = location.state;
-			document.getElementById("zip").value = location.zip;
-			document.getElementById("type").value = style;
-			document.getElementById("monday").value = schedule.monday;
-			document.getElementById("tuesday").value = schedule.tuesday;
-			document.getElementById("wednesday").value = schedule.wednesday;
-			document.getElementById("thursday").value = schedule.thursday;
-			document.getElementById("friday").value = schedule.friday;
-			document.getElementById("saturday").value = schedule.saturday;
-			document.getElementById("sunday").value = schedule.sunday;
+			document.getElementById("street").value = resLocation.street;
+			document.getElementById("city").value = resLocation.city;
+			document.getElementById("state").value = resLocation.state;
+			document.getElementById("zip").value = resLocation.zip;
+			document.getElementById("type").value = resStyle;
+			document.getElementById("monday").value = resSchedule.monday;
+			document.getElementById("tuesday").value = resSchedule.tuesday;
+			document.getElementById("wednesday").value = resSchedule.wednesday;
+			document.getElementById("thursday").value = resSchedule.thursday;
+			document.getElementById("friday").value = resSchedule.friday;
+			document.getElementById("saturday").value = resSchedule.saturday;
+			document.getElementById("sunday").value = resSchedule.sunday;
 		}
 		function writeDatabase() {
 			name = document.getElementById("resName").value;
@@ -73,7 +83,16 @@
 				style:this.style,
 				schedule:this.schedule
 			});
-			window.location = restuarantEditor.html;
+			window.location = 'restuarantEditor.html';
+		}
+		function toMenu() {
+			window.location = 'menuEditor.html';
+		}
+		function toDashboard() {
+			window.location = 'restuarantOwner.html';
+		}
+		function toOrder() {
+			window.location = 'restuarantEditor.html';
 		}
 	</script>
 </head>
@@ -104,8 +123,10 @@
 </body>
 <script>
 	document.getElementById('save').addEventListener('click',writeDatabase,false);
-	document.getElementById('menu').addEventListener('click',window.location=menuEditor.html,false);
-	document.getElementById('order').addEventListener('click',window.location=restuarantEditor.html,false);
-	document.getElementById('dashboard').addEventListener('click',window.location=restuarantOwner.html,false);
+	document.getElementById('menu').addEventListener('click',toMenu,false);
+	document.getElementById('order').addEventListener('click',toOrder,false);
+	document.getElementById('dashboard').addEventListener('click',toDashboard,false);
+	console.log("test1");
+	readDatabase();
 </script>
 </html>
