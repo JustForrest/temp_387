@@ -3,7 +3,8 @@
 	<title>Restuarant Management</title>
 	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
 	<script>
-		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID;
+		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID, r = -5;
+		var array = [7, 8, 2, 0, 3];
 		var config = {
 			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
   			authDomain: "group-12-4ca6d.firebaseapp.com",
@@ -14,17 +15,19 @@
 		};
 		firebase.initializeApp(config);
 		user = firebase.auth().currentUser;
+		console.log(array);
 		function loadUser() {
 			firebase.auth().onAuthStateChanged(function(user) {
 				if (user) {
 					thisUser = user;
 					uid = user.uid;
 					console.log(uid);
-					readDatabase();
+					
 				} else {
 					console.log("na");
 					loadUser();
 				}
+				readDatabase();
 			});
 		}
 		function setUID() {
@@ -38,9 +41,7 @@
 		}
 		function readDatabase() {
 			console.log("test2");
-			var db = firebase.firestore();
 			//snap = query("users", "id", "==", uid);
-			console.log(snap);
 			var db = firebase.firestore();
 			db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
@@ -48,13 +49,18 @@
 					var data = doc.data();
 					restuarantId = data.restuarantIDs;
 					console.log(restuarantId);
+					r = restuarantId[0];
+					console.log(r);
 				});
 
 			});
 			console.log(restuarantId);
 			//snap = query("restuarants", "style", "==", "mexican");
-			db.collection("restuarants").where("restuarantId", "==", restuarantId[0]).get().then(function(snapshot) {
-				snapshot.forEach(function(doc) {
+
+			db.collection("restuarants").where("restuarantId", "==", r).get().then(function(snapshot) {
+					console.log("query");
+					console.log(r);
+					snapshot.forEach(function(doc) {
 					console.log("test4");
 					console.log(doc.data());
 					console.log(doc.id);
@@ -71,10 +77,6 @@
 				});
 
 			});
-			
-			console.log(name);
-			console.log(resLocation);
-			console.log(resSchedule);
 		}
 		function resetFields() {
 			console.log("test5");
