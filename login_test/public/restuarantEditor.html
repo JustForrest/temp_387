@@ -3,7 +3,7 @@
 	<title>Restuarant Management</title>
 	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
 	<script>
-		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule;
+		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID;
 		var config = {
 			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
   			authDomain: "group-12-4ca6d.firebaseapp.com",
@@ -13,32 +13,65 @@
   			messagingSenderId: "215325431071"
 		};
 		firebase.initializeApp(config);
+		user = firebase.auth().currentUser;
+		function loadUser() {
+			firebase.auth().onAuthStateChanged(function(user) {
+				if (user) {
+					thisUser = user;
+					uid = user.uid;
+					console.log(uid);
+					readDatabase();
+				} else {
+					console.log("na");
+					loadUser();
+				}
+			});
+		}
+		function setUID() {
+			setTimeout(uid = firebase.auth().currentUser.uid,500)
+		}
+		function query(collection, field, condition, contents) {
+			var db = firebase.firestore();
+			db.collection(collection).where(field, condition, contents).get().then(function(snapshot) {
+				return snapshot;
+			})
+		}
 		function readDatabase() {
 			console.log("test2");
 			var db = firebase.firestore();
-			var user = firebase.auth().currentUser;
-			db.collection("users").where("id", "==", "RY4qsmRwZEhTz43sKN4XK9xPmVB2").get().then(function(snapshot) {
+			snap = query("users", "id", "==", uid);
+			console.log(snap);
+			var db = firebase.firestore();
+			db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
 					console.log("test3");
 					var data = doc.data();
 					restuarantId = data.restuarantIDs[0];
 					console.log(restuarantId);
 				});
+
 			});
-			db.collection("restuarants").where("style", "==", "mexican").get().then( function(snapshot) {
+			
+			snap = query("restuarants", "style", "==", "mexican");
+			db.collection("restuarants").where("style", "==", "mexican").get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
 					console.log("test4");
 					console.log(doc.data());
 					console.log(doc.id);
+					console.log(doc);
+					docID = doc.id;
 					restuarantDoc = doc;
-					console.log(restuarantDoc.id);var data = restuarantDoc.data();
+					console.log(restuarantDoc.id);
+					var data = restuarantDoc.data();
 					resSchedule = data.schedule;
 					name = data.restuarantName;
 					resStyle = data.style;
 					resLocation = data.location;
 					resetFields();
 				});
+
 			});
+			
 			console.log(name);
 			console.log(resLocation);
 			console.log(resSchedule);
@@ -60,6 +93,7 @@
 			document.getElementById("sunday").value = resSchedule.sunday;
 		}
 		function writeDatabase() {
+			var reference = firebase.database().ref("restuarants/" + docID);
 			name = document.getElementById("resName").value;
 			location = {
 				street:document.getElementById("street").value,
@@ -77,13 +111,12 @@
 				saturday:document.getElementById("saturday").value,
 				sunday:document.getElementById("sunday").value
 			}
-			restuarantDoc.update({
+			reference.update({
 				restuarantName:name,
-				restuarantLocation:location,
-				style:this.style,
-				schedule:this.schedule
+				location:resLocation,
+				style:resStyle,
+				schedule:resSchedule
 			});
-			window.location = 'restuarantEditor.html';
 		}
 		function toMenu() {
 			window.location = 'menuEditor.html';
@@ -127,6 +160,6 @@
 	document.getElementById('order').addEventListener('click',toOrder,false);
 	document.getElementById('dashboard').addEventListener('click',toDashboard,false);
 	console.log("test1");
-	readDatabase();
+	loadUser();
 </script>
 </html>
