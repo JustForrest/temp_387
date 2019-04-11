@@ -39,21 +39,21 @@
 		function readDatabase() {
 			console.log("test2");
 			var db = firebase.firestore();
-			snap = query("users", "id", "==", uid);
+			//snap = query("users", "id", "==", uid);
 			console.log(snap);
 			var db = firebase.firestore();
 			db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
 					console.log("test3");
 					var data = doc.data();
-					restuarantId = data.restuarantIDs[0];
+					restuarantId = data.restuarantIDs;
 					console.log(restuarantId);
 				});
 
 			});
-			
-			snap = query("restuarants", "style", "==", "mexican");
-			db.collection("restuarants").where("style", "==", "mexican").get().then(function(snapshot) {
+			console.log(restuarantId);
+			//snap = query("restuarants", "style", "==", "mexican");
+			db.collection("restuarants").where("restuarantId", "==", restuarantId[0]).get().then(function(snapshot) {
 				snapshot.forEach(function(doc) {
 					console.log("test4");
 					console.log(doc.data());
@@ -79,44 +79,52 @@
 		function resetFields() {
 			console.log("test5");
 			document.getElementById("resName").value = name;
-			document.getElementById("street").value = resLocation.street;
-			document.getElementById("city").value = resLocation.city;
-			document.getElementById("state").value = resLocation.state;
-			document.getElementById("zip").value = resLocation.zip;
+			document.getElementById("streetB").value = resLocation.street;
+			document.getElementById("cityB").value = resLocation.city;
+			document.getElementById("stateB").value = resLocation.state;
+			document.getElementById("zipB").value = resLocation.zip;
 			document.getElementById("type").value = resStyle;
-			document.getElementById("monday").value = resSchedule.monday;
-			document.getElementById("tuesday").value = resSchedule.tuesday;
-			document.getElementById("wednesday").value = resSchedule.wednesday;
-			document.getElementById("thursday").value = resSchedule.thursday;
-			document.getElementById("friday").value = resSchedule.friday;
-			document.getElementById("saturday").value = resSchedule.saturday;
-			document.getElementById("sunday").value = resSchedule.sunday;
+			document.getElementById("mondayB").value = resSchedule.monday;
+			document.getElementById("tuesdayB").value = resSchedule.tuesday;
+			document.getElementById("wednesdayB").value = resSchedule.wednesday;
+			document.getElementById("thursdayB").value = resSchedule.thursday;
+			document.getElementById("fridayB").value = resSchedule.friday;
+			document.getElementById("saturdayB").value = resSchedule.saturday;
+			document.getElementById("sundayB").value = resSchedule.sunday;
 		}
 		function writeDatabase() {
-			var reference = firebase.database().ref("restuarants/" + docID);
+			//var reference = firebase.database().ref("restuarants/" + docID);
+			var reference = firebase.firestore().collection("restuarants").doc(docID);
+			console.log(name);
+			var s = document.getElementById("stateB").value;
+			console.log(s);
 			name = document.getElementById("resName").value;
-			location = {
-				street:document.getElementById("street").value,
-				city:document.getElementById("city").value,
-				state:document.getElementById("state").value,
-				zip:document.getElementById("zip").value
-			}
-			style = document.getElementById("type").value;
-			schedule = {
-				monday:document.getElementById("monday").value,
-				tuesday:document.getElementById("tuesday").value,
-				wednesday:document.getElementById("wednesday").value,
-				thursday:document.getElementById("thursday").value,
-				friday:document.getElementById("friday").value,
-				saturday:document.getElementById("saturday").value,
-				sunday:document.getElementById("sunday").value
-			}
+			resLocation = {
+				street:document.getElementById("streetB").value,
+				city:document.getElementById("cityB").value,
+				state:s,
+				zip:document.getElementById("zipB").value
+			};
+			console.log(resLocation.state);
+			console.log(resLocation.city);
+			resStyle = document.getElementById("type").value;
+			resSchedule = {
+				monday:document.getElementById("mondayB").value,
+				tuesday:document.getElementById("tuesdayB").value,
+				wednesday:document.getElementById("wednesdayB").value,
+				thursday:document.getElementById("thursdayB").value,
+				friday:document.getElementById("fridayB").value,
+				saturday:document.getElementById("saturdayB").value,
+				sunday:document.getElementById("sundayB").value
+			};
+			console.log("updating");
 			reference.update({
 				restuarantName:name,
 				location:resLocation,
 				style:resStyle,
 				schedule:resSchedule
 			});
+			console.log("finished");
 		}
 		function toMenu() {
 			window.location = 'menuEditor.html';
@@ -127,28 +135,31 @@
 		function toOrder() {
 			window.location = 'restuarantEditor.html';
 		}
+		function setValue() {
+
+		}
 	</script>
 </head>
 <body>
 	<p>Edit your restuarant's information</p>
 	<br>
 	<p>Restuarant Name:</p>
-	<input type="text" id="resName" name="resName"/>
+	<input type="text" id="resName"/>
 	<p>Address:</p>
-	<input type="text" id="street" name="street"/>
-	<input type="text" id="city" name="city"/>
-	<input type="text" id="state" name="state"/>
-	<input type="text" id="zip" name="zip"/>
+	<input type="text" id="streetB"/>
+	<input type="text" id="cityB"/>
+	<input type="text" id="stateB"/>
+	<input type="text" id="zipB"/>
 	<p>Cuisine type:</p>
-	<input type="text" id="type" name="type"/>
+	<input type="text" id="type"/>
 	<p>Hours:</p>
-	<input type="text" id="monday" name="monday"/>
-	<input type="text" id="tuesday" name="tuesday"/>
-	<input type="text" id="wednesday" name="wednesday"/>
-	<input type="text" id="thursday" name="thursday"/>
-	<input type="text" id="friday" name="friday"/>
-	<input type="text" id="saturday" name="saturday"/>
-	<input type="text" id="sunday" name="sunday"/>
+	<input type="text" id="mondayB"/>
+	<input type="text" id="tuesdayB"/>
+	<input type="text" id="wednesdayB"/>
+	<input type="text" id="thursdayB"/>
+	<input type="text" id="fridayB"/>
+	<input type="text" id="saturdayB"/>
+	<input type="text" id="sundayB"/>
 	<button id="menu">Menu Editing</button>
 	<button id="save">Save Changes</button>
 	<button id="order">Order Management</button>
