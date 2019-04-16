@@ -19,14 +19,10 @@
 <link rel="stylesheet" type="text/css" href="theme.css">
 </head>
 <body>
-	<p>TestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTestTest</p>
+	<p>Thank You for creating an account with us!</p>
 	<button id= "sign_out"> Sign out</button>
 	<button id= "verify_email"> Send Email Verfication </button>
-	<button id= "who_am_i"> Who am I? </button>
-	<button id= "add">ADD TO DATABASE </button>
-  <button id= "toRestuarants">To Restuarant creator</button>
-
-	<img id= "f22" src= "f22.jpg" alt="an f22">
+	<button id= "dashboard">To the Dashboard</button>
 </body>
 
 <script type= "text/javascript">
@@ -51,10 +47,13 @@
         firebase.auth().signOut();
         // [END signout]
         // Go to index
-        window.location='index.html';
+        window.location='login.html';
 
     }
 
+}
+function toDashboard() {
+  window.location = 'restuarantOwner.html';
 }
 
 function whoAmI(){
@@ -104,8 +103,6 @@ function logUser() {
 
 document.getElementById('sign_out').addEventListener('click',signOut, false);
 document.getElementById('verify_email').addEventListener('click', sendEmailVerification, false);
-document.getElementById('who_am_i').addEventListener('click',whoAmI,false);
-document.getElementById('add').addEventListener('click',logUser,false);
-document.getElementById('toRestuarants').addEventListener('click',goToRestaurantCreator,false);
+document.getElementById('dashboard').addEventListener('click',toDashboard,false);
 
 </script>

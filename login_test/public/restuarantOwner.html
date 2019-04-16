@@ -9,15 +9,20 @@
 		function toProfile() {
 			window.location='restuarantOwner.html';
 		}
+		function toLanding() {
+			window.location='page1.html';
+		}
 	</script>
 </head>
 <body>
 	<h3>Welcome Restuarant Owner</h3>
 	<button id='mgmt'>Restuarant Management</button>
 	<button id='profile'>Edit Profile</button>
+	<button id='back'>Back to Landing</button>
 </body>
 	<script>
 		document.getElementById('mgmt').addEventListener('click',toMgmt,false);
 		document.getElementById('profile').addEventListener('click',toProfile,false);
+		document.getElementById('back').addEventListener('click',toLanding,false);
 	</script>
 </html>
