@@ -3,7 +3,7 @@
 	<title>Restuarant Management</title>
 	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
 	<script>
-		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID, r = -5;
+		var restuarantDoc, restuarantId, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID, r = -1;
 		var array = [7, 8, 2, 0, 3];
 		var config = {
 			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
@@ -39,25 +39,37 @@
 				return snapshot;
 			})
 		}
+		function getId() {
+			return new Promise(function(resolve, reject) {
+				var db = firebase.firestore();
+				db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
+					snapshot.forEach(function(doc) {
+						console.log("test3");
+						var data = doc.data();
+						restuarantId = data.restuarantIDs;
+						r = restuarantId;
+						console.log(r);
+					});
+				});
+				resolve();
+			});
+		}
 		function readDatabase() {
 			console.log("test2");
 			//snap = query("users", "id", "==", uid);
 			var db = firebase.firestore();
-			db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
-				snapshot.forEach(function(doc) {
-					console.log("test3");
-					var data = doc.data();
-					restuarantId = data.restuarantIDs;
-					console.log(restuarantId);
-					r = restuarantId[0];
-					console.log(r);
+			getId().then(setTimeout(function() {
+				return new Promise(function(resolve, reject) {
+					if(r == -1) {
+						console.log("rejected");
+						reject();
+					}else{
+						console.log("accepted");
+						resolve();
+					}
 				});
-
-			});
-			console.log(restuarantId);
-			//snap = query("restuarants", "style", "==", "mexican");
-
-			db.collection("restuarants").where("restuarantId", "==", r).get().then(function(snapshot) {
+			}, 1000)).then(setTimeout(function() {
+				db.collection("restuarants").where("restuarantId", "==", r).get().then(function(snapshot) {
 					console.log("query");
 					console.log(r);
 					snapshot.forEach(function(doc) {
@@ -74,10 +86,14 @@
 					resStyle = data.style;
 					resLocation = data.location;
 					resetFields();
-				});
-
+					});
+				});	
+			}, 1009)).catch(function() {
+				console.log("failed");
 			});
+			//snap = query("restuarants", "style", "==", "mexican");
 		}
+		
 		function resetFields() {
 			console.log("test5");
 			document.getElementById("resName").value = name;
