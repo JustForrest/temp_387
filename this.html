@@ -1,0 +1,44 @@
+<html>
+<head>
+	<title>Restuarants</title>
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+		var config = {
+			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  			authDomain: "group-12-4ca6d.firebaseapp.com",
+  			databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  			projectId: "group-12-4ca6d",
+  			storageBucket: "group-12-4ca6d.appspot.com",
+  			messagingSenderId: "215325431071"
+		};
+		firebase.initializeApp(config);
+		var $jsValue = document.querySelector('.list');
+		var numRestuarants = 0, listRestuarants = [], text = "", ul = "<ul>", sul = "</ul>", p = "<p>", sp = "</p>", li = "<li>", sli "</li>";
+		var restuarantRef = firebase.database().ref("restuarants/");
+		restuarantRef.once("value", function(data) {
+			data.forEach(function(data) {
+				var thisRestuarant = {
+					resName:data.restuarantName,
+					resType:data.style,
+					open:data.working
+				};
+				listRestuarants[numRestuarants] = thisRestuarant;
+				numRestuarants++;
+			});
+		});
+		for(var i = 0; i < listRestuarants.length; i++) {
+			var temp = listRestuarants[i];
+			text += (p + temp.resName + sp);
+			text += (ul + li + temp.resType + sli + li + temp.open + sli + sul);
+		}
+		//document.write(text);
+		//$jsValue.innerHTML = text;
+		document.getElementById("list").innerHTML = text;
+	</script>
+</head>
+<body>
+	<p>List of Restuarants</p>
+	<span class="restuarant">Default</span>
+	<p id="list"></p>
+</body>
+</html>
