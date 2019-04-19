@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Sign-In</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/signin.css" rel="stylesheet">
+
+	<!--===============================================================================================-->
+
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+  // Initialize Firebase
+  var config = {
+  	apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  	authDomain: "group-12-4ca6d.firebaseapp.com",
+  	databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  	projectId: "group-12-4ca6d",
+  	storageBucket: "group-12-4ca6d.appspot.com",
+  	messagingSenderId: "215325431071"
+  };
+  firebase.initializeApp(config);
+</script>
+
+</head>
+
+<body class="text-center">
+  <form class="form-signin">
+    <img class="mb-4" src="css/images/sign_in_logo.png" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    <label for="inputEmail" class="sr-only">Email address</label>
+    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+    <!-- <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+    </div> -->
+    <button class="btn btn-lg btn-primary btn-block" type="button" onclick="sign_In()">Sign In</button>
+    <button class="btn btn-lg btn-primary btn-block" type="button" onclick="sign_Up()">Sign Up</button>
+    <button class = "btn btn-secondary btn-sm btn-block" type= "button" onclick="sendPasswordReset()">Forgot?</button>
+
+    <!-- <p class="mt-5 mb-3 text-muted">&copy; 2017-{{ site.time | date: "%Y" }}</p> -->
+  </form>
+
+<!-- Optional JavaScript -->
+	<script type="text/javascript">
+
+	         //Google sign in
+	         function google(){
+	         	var provider = new firebase.auth.GoogleAuthProvider();
+	         	firebase.auth().signInWithPopup(provider).then(function(result) {
+	        // This gives you a Google Access Token. You can use it to access the Google API.
+	        var token = result.credential.accessToken;
+	        // The signed-in user info.
+	        var user = result.user;
+
+	      }).catch(function(error) {
+	          // Handle Errors here.
+	          var errorCode = error.code;
+	          var errorMessage = error.message;
+	          // The email of the user"s account used.
+	          var email = error.email;
+	          // The firebase.auth.AuthCredential type that was used.
+	          var credential = error.credential;
+	          alert(errorMessage);
+	        });
+	    }
+
+	        //sign in
+	        function sign_In(){
+	        	var email = document.getElementById("inputEmail").value;
+	        	var password = document.getElementById("inputPassword").value;
+	        	if (email.length < 4) {
+	        		alert("Email should be at least 4 characters long.");
+	        		return;
+	        	}
+	        	if (password.length < 4) {
+	        		alert("Password should be at least 4 characters long.");
+	        		return;
+	        	}
+	        	firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+	          // Handle Errors here.
+	          var errorCode = error.code;
+	          var errorMessage = error.message;
+	          if (errorCode === "auth/wrong-password") {
+	          	alert("Wrong password.");
+	          } else {
+	          	alert(errorMessage);
+	          }
+	          console.log(error);
+	        });
+	        }
+
+	    //sign up
+	    function sign_Up() {
+	    	var email = document.getElementById("inputEmail").value;
+	    	var password = document.getElementById("inputPassword").value;
+	    	if (email.length < 4) {
+	    		alert("Email should be at least 4 characters long.");
+	    		return;
+	    	}
+	    	if (password.length < 4) {
+	    		alert("Password should be at least 4 characters long.");
+	    		return;
+	    	}
+	      // Sign in with email and pass.
+	      // [START createwithemail]
+	      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+	        // Handle Errors here.
+	        var errorCode = error.code;
+	        var errorMessage = error.message;
+	        // [START_EXCLUDE]
+	        if (errorCode == "auth/weak-password") {
+	        	alert("The password is too weak.");
+	        } else {
+	        	alert(errorMessage);
+	        }
+	        console.log(error);
+	        // [END_EXCLUDE]
+	      });
+	    }
+
+	    function sendPasswordReset() {
+	     var email = document.getElementById("inputEmail").value;
+	      // [START sendpasswordemail]
+	      firebase.auth().sendPasswordResetEmail(email).then(function() {
+	        // Password Reset Email Sent!
+	        // [START_EXCLUDE]
+	        alert("Password Reset Email Sent!");
+	        // [END_EXCLUDE]
+	      }).catch(function(error) {
+	        // Handle Errors here.
+	        var errorCode = error.code;
+	        var errorMessage = error.message;
+	        // [START_EXCLUDE]
+	        if (errorCode == "auth/invalid-email") {
+	        	alert(errorMessage);
+	        } else if (errorCode == "auth/user-not-found") {
+	        	alert(errorMessage);
+	        }
+	        console.log(error);
+	        // [END_EXCLUDE]
+	      });
+	      // [END sendpasswordemail];
+	    }
+
+	    //initialze and state changes
+	    function initApp() {
+
+
+	      // Listening for auth state changes.
+	      // [START authstatelistener]
+	      firebase.auth().onAuthStateChanged(function(user) {
+	      	if (user) {
+
+	          // User is signed in.
+	          var user = firebase.auth().currentUser;
+	          var uid= user.uid;
+	          //serach database
+	          var db=firebase.firestore();
+	          var docRef= db.collection("users").doc(uid);
+	          docRef.get().then(function(doc){
+	          	if(doc.exists){
+	          		console.log("User in database");
+	          		window.location="page1.html";
+	          	}else {
+	          		console.log("User not in database");
+	          		window.location="signUp.html";
+	          	}
+	          }).catch(function(error){
+	          	console.log(error);
+	          });
+
+	        }else {
+	        //user is signed out
+	        console.log("used signed out");
+	      }
+
+	    });
+	    }
+	    window.onload= function(){
+	     initApp();
+	   };
+	 </script>
+
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="scripts/bootstrap.js"></script>
+
+	</body>
+</html>
