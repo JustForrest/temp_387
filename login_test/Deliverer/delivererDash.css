@@ -1,0 +1,19 @@
+body {
+	padding-top: 5rem;
+}
+.availableOrders {
+	padding: 3rem 1.5rem;
+	text-align: center;
+}
+.pastOrders{
+	padding: 3rem 1.5rem;
+	text-align: center;	
+}
+.currentOrder{
+	padding: 3rem 1.5rem;
+	text-align: center;	
+}
+.profileStuff{
+	padding: 3rem 1.5rem;
+	text-align: center;	
+}
