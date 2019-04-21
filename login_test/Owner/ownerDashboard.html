@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="generator" content="Jekyll v3.8.5">
+  <title>Home</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/starter-template/">
+  
+  <link href="ownerDash.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+  <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+    authDomain: "group-12-4ca6d.firebaseapp.com",
+    databaseURL: "https://group-12-4ca6d.firebaseio.com",
+    projectId: "group-12-4ca6d",
+    storageBucket: "group-12-4ca6d.appspot.com",
+    messagingSenderId: "215325431071"
+  };
+  firebase.initializeApp(config);
+</script>
+<script type="text/javascript">
+    function signOut(){
+
+     if (firebase.auth().currentUser) {
+        // [START signout]
+        firebase.auth().signOut();
+        // [END signout]
+        // Go to login
+        window.location='../login and signup/index.html';
+
+      }
+
+    }
+</script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Oxford to go</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="ownerDashboard.html">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="add.html">Add Restaurant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="editRestaurant.html">Edit Restaurant</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.html">My profile</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+      <form class="form-inline my-2 my-lg-0">
+    <button type="button" class="btn btn-danger my-2 my-sm-0" onclick="signOut()">Sign Out</button>
+  </form>
+    </div>
+  </nav>
+
+  <main role="main" class="container">
+
+    <div class="currentOrders">
+      <h1>Restaurant 1</h1>
+      <p class="lead">Sample order 1 <br> sample order 2</p>
+      <h1>Restaurant 2</h1>
+      <p class="lead">Sample order 1 <br> sample order 2</p>
+      <!-- Make list of current orders -->
+    </div>
+
+
+  </main><!-- /.container -->
+  </body>
+  </html>
