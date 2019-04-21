@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Sign Up</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="css/signUp.css">
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+  // Initialize Firebase
+  var config = {
+  	apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  	authDomain: "group-12-4ca6d.firebaseapp.com",
+  	databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  	projectId: "group-12-4ca6d",
+  	storageBucket: "group-12-4ca6d.appspot.com",
+  	messagingSenderId: "215325431071"
+  };
+  firebase.initializeApp(config);
+</script>
+</head>
+<body>
+	<form class="form-signup">
+		<h1 class="h3 mb-3 font-weight-normal">New User Signup</h1>
+		<button type="button" class="btn btn-primary btn-lg btn-block" onclick="user()">Customer</button>
+		<button type="button" class="btn btn-primary btn-lg btn-block" onclick="driver()" >Driver</button>
+		<button type="button" class="btn btn-primary btn-lg btn-block" onclick="owner()" >Owner</button>
+		<p></p>
+		<button type="button" class="btn btn-secondary btn-lg" onclick="signOut()">Sign Out</button>
+	</form>
+</body>
+
+
+<script type="text/javascript">
+	
+
+	function user(){
+		window.location="userSignUp.html";
+	}
+	function driver(){
+		window.location="driverSignUp.html";
+	}
+	function owner(){
+		window.location="ownerSignUp.html";
+	}
+	function signOut(){
+
+  	if (firebase.auth().currentUser) {
+        // [START signout]
+        firebase.auth().signOut();
+        // [END signout]
+        // Go to index
+        window.location='index.html';
+    }
+}
+
+
+</script>
