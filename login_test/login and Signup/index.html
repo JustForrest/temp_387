@@ -170,7 +170,14 @@
 	          docRef.get().then(function(doc){
 	          	if(doc.exists){
 	          		console.log("User in database");
-	          		window.location="page1.html";
+                var type = doc.data().userType;
+                if(type == "owner") {
+                  window.location="../Owner/ownerDashboard.html"
+                }else if(type == "driver") {
+                  window.location="../Deliverer/delivererDashboard.html"
+                }else if(type == "user") {
+                  window.location="../User/userDashboard.html "
+                }
 	          	}else {
 	          		console.log("User not in database");
 	          		window.location="signUp.html";
