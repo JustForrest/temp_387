@@ -1,0 +1,415 @@
+<html>
+<head>
+	<title>Restuarant Management</title>
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+	<script>
+		var restuarantDoc, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID, r = -1, resList = {}, resData = [{}], userDoc, high = 0;
+		/*
+		var resData = [{
+			id:0,
+			doc:0,
+			sch:{
+				monday:"",
+				tuesday:"",
+				wednesday:"",
+				thursday:"",
+				friday:"",
+				saturday:"",
+				sunday:""
+			},
+			nam:"",
+			sty:"",
+			loc:{
+				street:"",
+				city:"",
+				state:"",
+				zip:""
+			}
+		}];
+		*/
+		var array = [7, 8, 2, 0, 3];
+		var config = {
+			apiKey: "AIzaSyAPAts9WwBlTlkKangEXRzpIZMHDdcLXFw",
+  			authDomain: "group-12-4ca6d.firebaseapp.com",
+  			databaseURL: "https://group-12-4ca6d.firebaseio.com",
+  			projectId: "group-12-4ca6d",
+  			storageBucket: "group-12-4ca6d.appspot.com",
+  			messagingSenderId: "215325431071"
+		};
+		firebase.initializeApp(config);
+		user = firebase.auth().currentUser;
+		console.log(array);
+		function loadUser() {
+			firebase.auth().onAuthStateChanged(function(user) {
+				if (user) {
+					thisUser = user;
+					uid = user.uid;
+					console.log(uid);
+
+				} else {
+					console.log("na");
+					loadUser();
+				}
+				readDatabase();
+			});
+		}
+		function getId() {
+			return new Promise(function(resolve, reject) {
+				var db = firebase.firestore();
+				db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
+					snapshot.forEach(function(doc) {
+						console.log("test3");
+						userDoc = doc.id;
+						var data = doc.data();
+						resList = data.restuarantIDs;
+						r = resList[0];
+					});
+				});
+				resolve();
+			});
+		}
+		function readDatabase() {
+			console.log("test2");
+			//snap = query("users", "id", "==", uid);
+			var db = firebase.firestore();
+			getId().then(setTimeout(function() {
+				return new Promise(function(resolve, reject) {
+					if(r == -1) {
+						console.log("rejected");
+						reject();
+					}else{
+						console.log("accepted");
+						resolve();
+					}
+				});
+			}, 1000)).then(setTimeout(function() {
+				console.log(i);
+				//setting to -1 because i increments somewhere in the following 2 lines
+				for(var i = 0; i < resList.length; i++) {
+					console.log(i);
+					db.collection("restuarants").where("restuarantId", "==", resList[i]).get().then(function(snapshot) {
+						i--;
+						console.log("query");
+						snapshot.forEach(function(doc) {
+							docID = doc.id;
+							var data = doc.data();
+							resSchedule = data.schedule;
+							name = data.restuarantName;
+							resStyle = data.style;
+							resLocation = data.location;
+							resData[i] = {
+								id:resList[i],
+								doc:docID,
+								sch:resSchedule,
+								nam:name,
+								sty:resStyle,
+								loc:resLocation
+							};
+							console.log(resData[i]);
+							var option = document.createElement("option");
+							option.value = resList[i];
+							option.text = name;
+							document.getElementById("restuarants").add(option);
+						});
+					resetFields(0);
+					});
+				}
+				document.getElementById("restuarants").onchange = function() {
+					for(var i = 0; i < resList.length; i++) {
+						if(document.getElementById("restuarants").value == resList[i]) {
+							resetFields(i);
+						}
+					}
+				};
+			}, 1009)).catch(function() {
+				console.log("failed");
+			});
+			//snap = query("restuarants", "style", "==", "mexican");
+		}
+
+		function resetFields(i) {
+			console.log("test5");
+			docID = resList[i];
+			document.getElementById("resName").value = resData[i].nam;
+			console.log(resData[i].nam);
+			console.log(document.getElementById("resName").value);
+			document.getElementById("streetB").value = resData[i].loc.street;
+			document.getElementById("cityB").value = resData[i].loc.city;
+			document.getElementById("stateB").value = resData[i].loc.state;
+			document.getElementById("zipB").value = resData[i].loc.zip;
+			document.getElementById("type").value = resData[i].sty;
+			document.getElementById("mondayB").value = resData[i].sch.monday;
+			document.getElementById("tuesdayB").value = resData[i].sch.tuesday;
+			document.getElementById("wednesdayB").value = resData[i].sch.wednesday;
+			document.getElementById("thursdayB").value = resData[i].sch.thursday;
+			document.getElementById("fridayB").value = resData[i].sch.friday;
+			document.getElementById("saturdayB").value = resData[i].sch.saturday;
+			document.getElementById("sundayB").value = resData[i].sch.sunday;
+		}
+		function writeDatabase() {
+			//var reference = firebase.database().ref("restuarants/" + docID);
+			var reference = firebase.firestore().collection("restuarants").doc(docID);
+			var s = document.getElementById("stateB").value;
+			name = document.getElementById("resName").value;
+			resLocation = {
+				street:document.getElementById("streetB").value,
+				city:document.getElementById("cityB").value,
+				state:document.getElementById("stateB").value,
+				zip:document.getElementById("zipB").value
+			};
+			resStyle = document.getElementById("type").value;
+			resSchedule = {
+				monday:document.getElementById("mondayB").value,
+				tuesday:document.getElementById("tuesdayB").value,
+				wednesday:document.getElementById("wednesdayB").value,
+				thursday:document.getElementById("thursdayB").value,
+				friday:document.getElementById("fridayB").value,
+				saturday:document.getElementById("saturdayB").value,
+				sunday:document.getElementById("sundayB").value
+			};
+			console.log("updating");
+			reference.update({
+				restuarantName:name,
+				location:resLocation,
+				style:resStyle,
+				schedule:resSchedule
+			});
+			console.log("finished");
+		}
+		function setHigh() {
+			return new Promise(function(resolve, reject) {
+				firebase.firestore().collection("restuarants").get().then(function(snapshot) {
+					snapshot.forEach(function(doc) {
+						var data = doc.data().restuarantId;
+						if(high < data)
+							high = data;
+					});
+				});
+				resolve();
+			});
+		}
+		function addDatabase() {
+			console.log("starting");
+			var reference = firebase.firestore().collection("restuarants").doc();
+			console.log(reference.id);
+			var userRef = firebase.firestore().collection("users").doc(userDoc);
+			var s = document.getElementById("stateB").value;
+			name = document.getElementById("resName").value;
+			resLocation = {
+				street:document.getElementById("streetB").value,
+				city:document.getElementById("cityB").value,
+				state:document.getElementById("stateB").value,
+				zip:document.getElementById("zipB").value
+			};
+			resStyle = document.getElementById("type").value;
+			resSchedule = {
+				monday:document.getElementById("mondayB").value,
+				tuesday:document.getElementById("tuesdayB").value,
+				wednesday:document.getElementById("wednesdayB").value,
+				thursday:document.getElementById("thursdayB").value,
+				friday:document.getElementById("fridayB").value,
+				saturday:document.getElementById("saturdayB").value,
+				sunday:document.getElementById("sundayB").value
+			};
+			high = 0;
+
+			setHigh().then(setTimeout(function() {
+			high++;
+			console.log(high);
+			var option = document.createElement("option");
+			option.value = high;
+			option.text = name;
+			document.getElementById("restuarants").add(option);
+			resList[resList.length] = high;
+			console.log("updating user");
+			userRef.update({
+				restuarantIDs:resList
+			});
+			resData[resData.length] = {
+				id:high,
+				doc:reference.id,
+				sch:resSchedule,
+				loc:resLocation,
+				nam:name,
+				sty:resStyle
+			};
+			console.log("adding restuarant");
+			reference.set({
+				restuarantId:high,
+				restuarantName:name,
+				location:resLocation,
+				style:resStyle,
+				schedule:resSchedule
+			});
+			}, 2000));
+		}
+		function deleteEntry() {
+			console.log("start deletion");
+			var index = document.getElementById("restuarants").selectedIndex;
+			console.log(index);
+			console.log(resList[index]);
+			console.log(resData[index]);
+			console.log(resData);
+			var deleting = resData.splice(index, 1);
+			console.log(resData);
+			console.log(deleting);
+			var resDoc = "";
+			resDoc = deleting[0].doc;
+			console.log(resDoc);
+			firebase.firestore().collection("restuarants").doc(resDoc).delete().then(function() {
+				console.log(resDoc + " deleted");
+			});
+			console.log(resList);
+			resList.splice(index, 1);
+			console.log(resList);
+			firebase.firestore().collection("users").doc(userDoc).update({
+				restuarantIDs:resList
+			});
+			document.getElementById("restuarants").remove(index);
+			resetFields(document.getElementById("restuarants").selectedIndex);
+		}
+		function toMenu() {
+			window.location = 'menuEditor.html';
+		}
+		function toDashboard() {
+			window.location = 'restuarantOwner.html';
+		}
+		function toOrder() {
+			window.location = 'restuarantEditor.html';
+		}
+	</script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Oxford to Go</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="ownerDashboard.html">Home </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="add.html">Add Restaurant</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="editRestaurant.html">Edit Restaurant <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.html">My profile</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+      <form class="form-inline my-2 my-lg-0">
+    <button type="button" class="btn btn-danger my-2 my-sm-0" onclick="signOut()">Sign Out</button>
+  </form>
+    </div>
+  </nav>
+
+  <main role="main" class="container">
+
+	<select id="restuarants" class="form-control">
+	  <option>choose restaurant</option>
+	</select>
+
+	<br>
+
+	<!-- <select id="restuarants"></select> -->
+	<form>
+	<div class="form-group">
+    <input type="text" class="form-control" id="resName" placeholder="Name">
+  </div>
+	<!-- <input type="text" id="resName"/> -->
+
+	<!-- <p>Address:</p>
+	<input type="text" id="streetB"/>
+	<input type="text" id="cityB"/>
+	<input type="text" id="stateB"/>
+	<input type="text" id="zipB"/> -->
+
+	<h4 class="text-center">location</h4>
+
+	<div class="form-row">
+		<div class="form-group col-md-3">
+			<input type="text" class="form-control" id="streetB" placeholder="Street">
+		</div>
+		<div class="form-group col-md-3">
+			<input type="text" class="form-control" id="cityB" placeholder="City">
+		</div>
+		<div class="form-group col-md-3">
+			<input type="text" class="form-control" id="stateB" placeholder="State">
+		</div>
+		<div class="form-group col-md-3">
+			<input type="text" class="form-control" id="zipB" placeholder="Zip">
+		</div>
+	</div>
+
+	<!-- <p>Cuisine type:</p>
+	<input type="text" id="type"/> -->
+	<br>
+	<h4 class="text-center">cuisine</h4>
+
+	<div class="form-group">
+		<input type="text" class="form-control" id="type" placeholder="cuisine type">
+	</div>
+
+	<br>
+	<h4 class="text-center">hours</h4>
+
+	<div class="form-row">
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="mondayB" placeholder="Monday">
+		</div>
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="tuesdayB" placeholder="Tuesday">
+		</div>
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="wednesdayB" placeholder="Wednesday">
+		</div>
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="thursdayB" placeholder="Thursday">
+		</div>
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="fridayB" placeholder="Friday">
+		</div>
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="saturdayB" placeholder="Saturday">
+		</div>
+		<div class="form-group col-md-2">
+			<input type="text" class="form-control" id="sundayB" placeholder="Sunday">
+		</div>
+	</div>
+
+	<!-- <p>Hours:</p>
+	<input type="text" id="mondayB"/>
+	<input type="text" id="tuesdayB"/>
+	<input type="text" id="wednesdayB"/>
+	<input type="text" id="thursdayB"/>
+	<input type="text" id="fridayB"/>
+	<input type="text" id="saturdayB"/>
+	<input type="text" id="sundayB"/> -->
+
+
+	<button id="add" class = "btn btn-outline-primary">Add New Restaurant</button>
+	<button id="menu" class = "btn btn-outline-primary">Menu Editing</button>
+	<button id="save" class = "btn btn-outline-primary">Save Changes</button>
+	<button id="order" class = "btn btn-outline-primary">Order Management</button>
+	<button id="dashboard" class = "btn btn-outline-primary">Back to dashboard</button>
+</form>
+</body>
+<script>
+	document.getElementById('delete').addEventListener('click',deleteEntry,false);
+	document.getElementById('add').addEventListener('click',addDatabase,false);
+	document.getElementById('save').addEventListener('click',writeDatabase,false);
+	document.getElementById('menu').addEventListener('click',toMenu,false);
+	document.getElementById('order').addEventListener('click',toOrder,false);
+	document.getElementById('dashboard').addEventListener('click',toDashboard,false);
+	console.log("test1");
+	loadUser();
+</script>
+</html>
