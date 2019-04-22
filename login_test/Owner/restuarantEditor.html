@@ -1,19 +1,9 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>Restaurant Management</title>
-
-	<!-- Bootstrap CSS -->
-	<link href="../login and Signup/css/bootstrap.css" rel="stylesheet">
-	<link href="ownerDash.css" rel="stylesheet">
-
-<!--===============================================================================================-->
+<html>
+<head>
+	<title>Restuarant Management</title>
 	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
 	<script>
-		var restuarantDoc, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID, r = -1, resList = {}, resData = [{}];
+		var restuarantDoc, resLocation, name, resStyle, resSchedule, thisUser, uid, snap, docID, r = -1, resList = {}, resData = [{}], userDoc, high = 0;
 		/*
 		var resData = [{
 			id:0,
@@ -69,6 +59,7 @@
 				db.collection("users").where("id", "==", uid).get().then(function(snapshot) {
 					snapshot.forEach(function(doc) {
 						console.log("test3");
+						userDoc = doc.id;
 						var data = doc.data();
 						resList = data.restuarantIDs;
 						r = resList[0];
@@ -185,6 +176,98 @@
 			});
 			console.log("finished");
 		}
+		function setHigh() {
+			return new Promise(function(resolve, reject) {
+				firebase.firestore().collection("restuarants").get().then(function(snapshot) {
+					snapshot.forEach(function(doc) {
+						var data = doc.data().restuarantId;
+						if(high < data)
+							high = data;
+					});
+				});
+				resolve();
+			});
+		}
+		function addDatabase() {
+			console.log("starting");
+			var reference = firebase.firestore().collection("restuarants").doc();
+			console.log(reference.id);
+			var userRef = firebase.firestore().collection("users").doc(userDoc);
+			var s = document.getElementById("stateB").value;
+			name = document.getElementById("resName").value;
+			resLocation = {
+				street:document.getElementById("streetB").value,
+				city:document.getElementById("cityB").value,
+				state:document.getElementById("stateB").value,
+				zip:document.getElementById("zipB").value
+			};
+			resStyle = document.getElementById("type").value;
+			resSchedule = {
+				monday:document.getElementById("mondayB").value,
+				tuesday:document.getElementById("tuesdayB").value,
+				wednesday:document.getElementById("wednesdayB").value,
+				thursday:document.getElementById("thursdayB").value,
+				friday:document.getElementById("fridayB").value,
+				saturday:document.getElementById("saturdayB").value,
+				sunday:document.getElementById("sundayB").value
+			};
+			high = 0;
+
+			setHigh().then(setTimeout(function() {
+			high++;
+			console.log(high);
+			var option = document.createElement("option");
+			option.value = high;
+			option.text = name;
+			document.getElementById("restuarants").add(option);
+			resList[resList.length] = high;
+			console.log("updating user");
+			userRef.update({
+				restuarantIDs:resList
+			});
+			resData[resData.length] = {
+				id:high,
+				doc:reference.id,
+				sch:resSchedule,
+				loc:resLocation,
+				nam:name,
+				sty:resStyle
+			};
+			console.log("adding restuarant");
+			reference.set({
+				restuarantId:high,
+				restuarantName:name,
+				location:resLocation,
+				style:resStyle,
+				schedule:resSchedule
+			});
+			}, 2000));
+		}
+		function deleteEntry() {
+			console.log("start deletion");
+			var index = document.getElementById("restuarants").selectedIndex;
+			console.log(index);
+			console.log(resList[index]);
+			console.log(resData[index]);
+			console.log(resData);
+			var deleting = resData.splice(index, 1);
+			console.log(resData);
+			console.log(deleting);
+			var resDoc = "";
+			resDoc = deleting[0].doc;
+			console.log(resDoc);
+			firebase.firestore().collection("restuarants").doc(resDoc).delete().then(function() {
+				console.log(resDoc + " deleted");
+			});
+			console.log(resList);
+			resList.splice(index, 1);
+			console.log(resList);
+			firebase.firestore().collection("users").doc(userDoc).update({
+				restuarantIDs:resList
+			});
+			document.getElementById("restuarants").remove(index);
+			resetFields(document.getElementById("restuarants").selectedIndex);
+		}
 		function toMenu() {
 			window.location = 'menuEditor.html';
 		}
@@ -193,9 +276,6 @@
 		}
 		function toOrder() {
 			window.location = 'restuarantEditor.html';
-		}
-		function setValue() {
-
 		}
 	</script>
 </head>
@@ -323,6 +403,8 @@
 </form>
 </body>
 <script>
+	document.getElementById('delete').addEventListener('click',deleteEntry,false);
+	document.getElementById('add').addEventListener('click',addDatabase,false);
 	document.getElementById('save').addEventListener('click',writeDatabase,false);
 	document.getElementById('menu').addEventListener('click',toMenu,false);
 	document.getElementById('order').addEventListener('click',toOrder,false);
@@ -330,9 +412,4 @@
 	console.log("test1");
 	loadUser();
 </script>
-
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="../login and Signup/scripts/bootstrap.js"></script>
 </html>
